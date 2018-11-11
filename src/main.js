@@ -26,6 +26,10 @@ L.Icon.Default.mergeOptions({
   shadowUrl: require('leaflet/dist/images/marker-shadow.png')
 });
 
+// geolocation
+import VueGeolocation from 'vue-browser-geolocation';
+Vue.use(VueGeolocation);
+
 Vue.config.productionTip = false
 
 new Vue({
