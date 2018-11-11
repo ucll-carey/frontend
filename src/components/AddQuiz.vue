@@ -1,13 +1,4 @@
-/*
-The name of the city and the coordinates of the city
-A description of the game
-Multiple questions:
-GPS Coordinates where the question should be asked
-A simple question
-Multiple answers (max 1 sentence)
-The correct answer
-A field where I can enter some extra details about the correct answer
-*/<template>
+<template>
   <b-container class="bv-example-row">
     <h2>Add a city game</h2>
     <b-form @submit="onSubmit" @reset="onReset">
@@ -64,6 +55,12 @@ A field where I can enter some extra details about the correct answer
           placeholder=""/>
       </b-form-group>
 
+<p>
+      <b-button>
+        Add Question
+      </b-button>
+</p>
+
 <!--
       <b-form-group>
         <b-form-checkbox-group v-model="form.checked" id="exampleChecks">
@@ -89,6 +86,7 @@ export default {
           coordinates: { longitude: null, latitude: null },
         },
         description: '',
+        questions: [],
       },
     };
   },
