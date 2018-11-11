@@ -1,17 +1,5 @@
 <template>
   <div class="home">
-    <AddQuiz/>
+    <h1>Home</h1>
   </div>
 </template>
-
-<script>
-// @ is an alias to /src
-import AddQuiz from '@/components/AddQuiz.vue'
-
-export default {
-  name: 'home',
-  components: {
-    AddQuiz,
-  }
-}
-</script>
