@@ -24,19 +24,7 @@
       </b-form-group>
 
       <b-form-group label="City coordinates">
-        <b-row>
-          <b-col>
-            <b-form-input type="text" step="0.0000001"
-                          v-model="form.city.coordinates.longitude"
-                          required @change="checkCoordinates"
-                          placeholder="Longitude, eg: 50.884089"/>
-          </b-col>
-          <b-col>
-            <b-form-input type="text" step="0.0000001"
-                          v-model="form.city.coordinates.latitude"
-                          required placeholder="Latitude, eg: 4.6353902"/>
-          </b-col>
-        </b-row>
+        <coordinates :coordinates.sync="form.city.coordinates" />
       </b-form-group>
 
       <b-form-group label="Description of the game" 
@@ -49,42 +37,60 @@
           placeholder=""/>
       </b-form-group>
 
-      <p>
-        <b-button @click="addQuestion">
-          <fas icon="plus" />
-          Add Question
-        </b-button>
-      </p>
-
-      <ul>
-        <li v-for="(item, index) in form.questions" :key="index">
-          <b-button @click="removeQuestion(index)">
+      <ul class="questions">
+        <li v-for="(item, i) in form.questions" :key="i">
+          <b-button @click="removeQuestion(i)">
             <fas icon="trash" />
           </b-button>
 
+          <b-form-group label="Question coordinates">
+            <coordinates :coordinates.sync="item.coordinates" />
+          </b-form-group>
           <b-form-group label="Question">
             <b-form-input type="text" v-model="item.question" required/>
           </b-form-group>
-
+          <ul class="answers">
+            <li v-for="(answer, j) in item.answers" :key="j">
+              <b-input-group>
+                <b-input-group-prepend is-text>
+                  <input type="radio" :value="j" v-model="item.correctQuestionIndex" />
+                </b-input-group-prepend>
+                <b-form-input type="text" v-model="answer.value" :ref="`question${i}answer${j}`" />
+                <b-input-group-append>
+                  <b-btn variant="outline-secondary" @click="removeAnswer(item, j)"><fas icon="trash"/></b-btn>
+                </b-input-group-append>
+              </b-input-group>
+            </li>
+            <li class="last">
+                <b-btn variant="link" @click="addAnswer(item)">
+                  <fas icon="plus"/>
+                  Add Answer
+                </b-btn>
+            </li>
+          </ul>
+          <b-form-group label="Extra information about answer">
+            <b-form-textarea rows="3" v-model="item.information"/>
+          </b-form-group>
         </li>
-      </ul>
+        <li class="last">
+          <b-button variant="link" @click="addQuestion">
+            <fas icon="plus" />
+            Add Question
+          </b-button>
+        </li>
 
-<!--
-      <b-form-group>
-        <b-form-checkbox-group v-model="form.checked" id="exampleChecks">
-          <b-form-checkbox value="me">Check me out</b-form-checkbox>
-          <b-form-checkbox value="that">Check that out</b-form-checkbox>
-        </b-form-checkbox-group>
-      </b-form-group>
-      -->
+      </ul>
       <b-button type="submit" variant="primary">Submit</b-button>
-      <b-button type="reset" variant="danger">Reset</b-button>
     </b-form>
   </b-container>
 </template>
 
 <script>
+import coordinates from '@/components/Coordinates.vue'
 export default {
+  components: {
+    coordinates,
+  },
   data() {
     return {
       form: {
@@ -94,12 +100,7 @@ export default {
           coordinates: { longitude: null, latitude: null },
         },
         description: '',
-        questions: [{
-          coordinates: { longitude: '50.3', latitude: '0.2' },
-          question: 'How much is 1+1?',
-          answers: ['1', '2', '3'],
-          correctQuestionIndex: 2,
-        }],
+        questions: [],
       },
     };
   },
@@ -115,24 +116,18 @@ export default {
     removeQuestion(index) {
       this.form.questions.splice(index, 1);
     },
-    checkCoordinates() {
-      const coordinateFormat = this.form.city.coordinates.longitude.match(/(\d+\.\d+),(\d+\.\d+)/);
-      if (coordinateFormat) {
-        this.form.city.coordinates.longitude = coordinateFormat[1];
-        this.form.city.coordinates.latitude = coordinateFormat[2];
+    addAnswer(question){
+      question.answers.push({ value: ''});
+    },
+    removeAnswer(question, index){
+      question.answers.splice(index, 1);
+      if (question.correctQuestionIndex === index) {
+        question.correctQuestionIndex = null;
       }
     },
     onSubmit(evt) {
       evt.preventDefault();
-      alert(JSON.stringify(this.form));
-    },
-    onReset(evt) {
-      evt.preventDefault();
-      /* Reset our form values */
-      this.form.name = '';
-      /* Trick to reset/clear native browser form validation state */
-      this.show = false;
-      this.$nextTick(() => this.show = true);
+      console.info('would submit:', this.form);
     },
   },
 };

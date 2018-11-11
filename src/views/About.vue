@@ -1,5 +1,11 @@
 <template>
   <div class="about">
-    <h1>This is an about page</h1>
+    <h1>UCLL CityQuest</h1>
+    <p>By team Carey</p>
   </div>
 </template>
+<style scoped lang="scss">
+  .about {
+    text-align: center;
+  }
+</style>
