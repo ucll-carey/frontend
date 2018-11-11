@@ -1,6 +1,6 @@
 <template>
   <b-container class="bv-example-row">
-    <h2>Add a city game</h2>
+    <h2>Add city game</h2>
     <b-form @submit="onSubmit" @reset="onReset">
 
       <b-form-group label="Name of the game" 
@@ -26,21 +26,15 @@
       <b-form-group label="City coordinates">
         <b-row>
           <b-col>
-            <b-form-input 
-                          type="text"
-                          step="0.0000001"
+            <b-form-input type="text" step="0.0000001"
                           v-model="form.city.coordinates.longitude"
-                          required
-                          @change="checkCoordinates"
+                          required @change="checkCoordinates"
                           placeholder="Longitude, eg: 50.884089"/>
           </b-col>
           <b-col>
-            <b-form-input
-                          type="text"
-                          step="0.0000001"
+            <b-form-input type="text" step="0.0000001"
                           v-model="form.city.coordinates.latitude"
-                          required
-                          placeholder="Latitude, eg: 4.6353902"/>
+                          required placeholder="Latitude, eg: 4.6353902"/>
           </b-col>
         </b-row>
       </b-form-group>
@@ -55,11 +49,25 @@
           placeholder=""/>
       </b-form-group>
 
-<p>
-      <b-button>
-        Add Question
-      </b-button>
-</p>
+      <p>
+        <b-button @click="addQuestion">
+          <fas icon="plus" />
+          Add Question
+        </b-button>
+      </p>
+
+      <ul>
+        <li v-for="(item, index) in form.questions" :key="index">
+          <b-button @click="removeQuestion(index)">
+            <fas icon="trash" />
+          </b-button>
+
+          <b-form-group label="Question">
+            <b-form-input type="text" v-model="item.question" required/>
+          </b-form-group>
+
+        </li>
+      </ul>
 
 <!--
       <b-form-group>
@@ -86,11 +94,27 @@ export default {
           coordinates: { longitude: null, latitude: null },
         },
         description: '',
-        questions: [],
+        questions: [{
+          coordinates: { longitude: '50.3', latitude: '0.2' },
+          question: 'How much is 1+1?',
+          answers: ['1', '2', '3'],
+          correctQuestionIndex: 2,
+        }],
       },
     };
   },
   methods: {
+    addQuestion() {
+      this.form.questions.push({
+        coordinates: { longitude: null, latitude: null },
+        question: '',
+        answers: [],
+        correctQuestionIndex: 0,
+      });
+    },
+    removeQuestion(index) {
+      this.form.questions.splice(index, 1);
+    },
     checkCoordinates() {
       const coordinateFormat = this.form.city.coordinates.longitude.match(/(\d+\.\d+),(\d+\.\d+)/);
       if (coordinateFormat) {
