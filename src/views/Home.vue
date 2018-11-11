@@ -21,6 +21,7 @@ export default {
         }
     },
     mounted() {
+      this.loading = true;
         axios
             .get('http://localhost:8080/api/game/')
             .then(response => {
