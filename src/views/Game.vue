@@ -16,12 +16,14 @@
         <l-marker v-if="user" :lat-lng="user" :icon="userIcon"/>
       </l-map>
     </div>
+    <Question :question="game.questions[0]"/>
   </b-container>
 </template>
 
 <script>
   import axios from 'axios';
   import {LMap, LTileLayer, LMarker, LPopup} from 'vue2-leaflet';
+  import Question from '../components/Question';
 
   import L from 'leaflet';
 
@@ -39,6 +41,7 @@
       LTileLayer,
       LMarker,
       LPopup,
+      Question
     },
     data() {
       return {
