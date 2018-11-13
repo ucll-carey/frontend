@@ -1,4 +1,5 @@
 # cityquest-frontend2
+[Backend](https://github.com/cpeelman/cityquest-backend)
 
 ## Project setup
 ```
@@ -8,6 +9,10 @@ npm install
 ### Compiles and hot-reloads for development
 ```
 npm run serve
+```
+or
+```
+npm start
 ```
 
 ### Compiles and minifies for production
