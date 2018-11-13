@@ -1,16 +1,26 @@
 <template>
   <b-container>
     <h2>Games</h2>
-    <b-card v-for="(game, index) in games" :key="index" :title="game.name" :footer="game.city"
-            style="max-width: 20rem;" class="mb-2">
-      <p class="card-text">{{game.description}}</p>
-      <b-button-group>
-        <b-button :href="`/game/${game.id}`" variant="success">Start This game</b-button>
-        <b-button @click="removeGame(game)" variant="outline-danger">
-          <fas icon="trash"/>
-        </b-button>
-      </b-button-group>
-    </b-card>
+    <b-carousel id="carousel" style="text-shadow: 1px 1px 2px #333;filter: invert(1);border-radius:0.3rem;"
+                controls indicators background="#000" :interval="4000" img-width="1024" img-height="320"
+                v-model="slide" @sliding-start="onSlideStart" @sliding-end="onSlideEnd">
+      <b-carousel-slide v-for="(game, index) of games" :key="index" img-blank img-alt="Blank image">
+        <div class="row">
+          <div class="col-xs-4">
+            <b-card :title="game.name" style="max-width: 20rem;" class="mb-2">
+              <p class="card-text">{{game.description}}<span class="city"> - @{{game.city}}</span></p>
+              <b-button :href="`/game/${game.id}`" variant="primary">Start This game</b-button>
+              <div>
+                <b-button @click="removeGame(game)" class="removeGameButton">Remove this game
+                  <fas icon="trash"></fas>
+                </b-button>
+              </div>
+            </b-card>
+          </div>
+          <img class="col-xs-7 col-xs-offset-1" src="https://cdn-images-1.medium.com/max/1600/0*DanKLTmLyEKOh17A."/>
+        </div>
+      </b-carousel-slide>
+    </b-carousel>
   </b-container>
 </template>
 
@@ -22,6 +32,8 @@
       return {
         loading: false,
         games: [],
+        slide: 0,
+        sliding: null
       }
     },
     mounted() {
@@ -42,9 +54,91 @@
       async removeGame(game) {
         await axios.delete('http://localhost:8080/api/game/' + game.id);
         this.getGames();
+      },
+      onSlideStart() {
+        this.sliding = true
+      },
+      onSlideEnd() {
+        this.sliding = false
       }
 
     }
 
   }
 </script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped lang="scss">
+  h2 {
+    text-align: center;
+  }
+
+  h3:host {
+    margin: 40px 0 0;
+  }
+
+  ul {
+    list-style-type: none;
+    padding: 0;
+  }
+
+  li {
+    display: inline-block;
+    margin: 0 10px;
+  }
+
+  a {
+    color: #42b983;
+  }
+
+  img {
+    max-width: 30rem;
+    max-height: 15rem;
+    width: auto;
+    height: auto;
+    filter: invert(1);
+    margin: 1rem 0;
+  }
+
+  .card {
+    color: #2c3e50 !important;
+    text-shadow: none !important;
+    border: none;
+    filter: invert(1);
+  }
+
+  .card .city {
+    color: gray;
+    font-size: 0.9rem;
+  }
+
+  .row {
+    min-height: 17rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .col-xs-offset-1 {
+    margin-left: 8.333333333333332%;
+  }
+
+  .btn-primary {
+    color: white;
+  }
+
+  .removeGameButton {
+    font-size: 0.8rem;
+    background: white;
+    color: gray;
+    margin-top: 2rem;
+    border: none;
+    padding: 0.2rem 0.5rem;
+  }
+
+  .removeGameButton:hover {
+    background: #e9e9e9;
+    color: #6d6d6d;
+  }
+
+</style>
