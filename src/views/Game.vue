@@ -6,7 +6,7 @@
              @update:center="centerUpdate" @update:zoom="zoomUpdate">
         <l-tile-layer :url="url" :attribution="attribution"/>
         <l-marker v-for="(question, index) in game.questions" :key="index"
-                  :lat-lng="getCoordinates(question.coordinate)">
+                  :lat-lng="getCoordinates(question.coordinates)">
           <l-popup>
             <div @click="popupClick">
               {{question.question}}
@@ -74,7 +74,7 @@
         this.currentCenter = center;
       },
       getCoordinates(coordinates) {
-        return L.latLng(coordinates.latitude, coordinates.longitude);
+        return L.latLng(coordinates.lat, coordinates.lon);
       },
       popupClick() {
         alert('Popup Click!');
@@ -87,11 +87,12 @@
         //this.center = this.user;
       });
       axios
-        .get('http://localhost:8080/api/game/' + this.$route.params.id)
+        .get('http://localhost:8080/games/' + this.$route.params.id)
         .then(response => {
           const game = response.data;
+          console.log('game', game);
           this.game = game;
-          this.center = L.latLng(game.cityCoordinate.latitude, game.cityCoordinate.longitude);
+          this.center = L.latLng(game.coordinates.lat, game.coordinates.lon);
         })
         .catch(error => {
           console.log(error);

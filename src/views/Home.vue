@@ -43,7 +43,7 @@
     methods: {
       getGames() {
         return axios
-          .get('http://localhost:8080/api/game/')
+          .get('http://localhost:8080/games')
           .then(response => {
             this.games = response.data
           })
@@ -52,7 +52,7 @@
           })
       },
       async removeGame(game) {
-        await axios.delete('http://localhost:8080/api/game/' + game.id);
+        await axios.delete('http://localhost:8080/games/' + game.id);
         this.getGames();
       },
       onSlideStart() {
