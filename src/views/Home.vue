@@ -17,7 +17,7 @@
               </div>
             </b-card>
           </div>
-          <img class="col-xs-7 col-xs-offset-1" src="https://cdn-images-1.medium.com/max/1600/0*DanKLTmLyEKOh17A."/>
+          <img :src=game.image class="col-xs-7 col-xs-offset-1"/>
         </div>
       </b-carousel-slide>
     </b-carousel>
@@ -33,23 +33,34 @@
         loading: false,
         games: [],
         slide: 0,
-        sliding: null
+        sliding: null,
+        wikipedia: null
       }
     },
     mounted() {
       this.loading = true;
-      this.getGames().finally(() => this.loading = false)
+      this.getGames().finally(() => this.loading = false);
     },
     methods: {
-      getGames() {
-        return axios
-          .get('http://localhost:8080/games')
+      async getGames() {
+        const response = await axios.get('http://localhost:8080/games');
+        this.games = await Promise.all(response.data.map(async (game) => {
+          game.image = await this.getGameImage(game.location);
+          return game;
+        }));
+      },
+      async getGameImage(location) {
+        return axios.get('https://cors-anywhere.herokuapp.com/http://en.wikipedia.org/w/api.php?action=query&prop=pageimages&format=json&piprop=original&titles=' + location)
           .then(response => {
-            this.games = response.data
-          })
-          .catch(error => {
-            console.log(error)
-          })
+            let id = Object.keys(response.data.query.pages)[0];
+            if (response.data.query.pages[id].original) {
+              return response.data.query.pages[id].original.source;
+            } else {
+              return '/images/no-city-image.jpg';
+            }
+          }).catch(error => {
+            console.error(error);
+          });
       },
       async removeGame(game) {
         await axios.delete('http://localhost:8080/games/' + game.id);
