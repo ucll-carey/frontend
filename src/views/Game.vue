@@ -1,7 +1,7 @@
 <template>
   <b-container v-if="game">
     <h2>{{ game.name }}</h2>
-    <div style="height: 600px; overflow: auto; border: 1px solid black;">
+    <div style="height: 600px; overflow: auto; border: 1px solid black;" v-if="noNearbyQuestions">
       <l-map :zoom="zoom" :options="mapOptions" :center="center"
              @update:center="centerUpdate" @update:zoom="zoomUpdate">
         <l-tile-layer :url="url" :attribution="attribution"/>
@@ -16,13 +16,14 @@
         <l-marker v-if="user" :lat-lng="user" :icon="userIcon"/>
       </l-map>
     </div>
-    <Question :question="game.questions[0]"/>
+    <Question v-if="currentIndex !== null" :question="this.game.questions[currentIndex]"
+              :getNextQuestion="checkForNearbyQuestions"/>
   </b-container>
 </template>
 
 <script>
   import axios from 'axios';
-  import {LMap, LTileLayer, LMarker, LPopup} from 'vue2-leaflet';
+  import {LMap, LMarker, LPopup, LTileLayer} from 'vue2-leaflet';
   import Question from '../components/Question';
 
   import L from 'leaflet';
@@ -46,6 +47,7 @@
     data() {
       return {
         loading: false,
+        noNearbyQuestions: true,
         game: null,
         user: null,
         userIcon: L.icon({
@@ -63,7 +65,8 @@
         currentCenter: L.latLng(47.413220, -1.219482),
         mapOptions: {
           zoomSnap: 1,
-        }
+        },
+        currentIndex: null
       };
     },
     methods: {
@@ -79,14 +82,41 @@
       popupClick() {
         alert('Popup Click!');
       },
+      checkForNearbyQuestions() {
+        this.noNearbyQuestions = true;
+        this.currentIndex = null;
+        this.game.questions
+          .filter(question => !question.answered)
+          .forEach(async (question, index) => {
+            const distance = await this.getDistance(question.coordinates.lat, question.coordinates.lon);
+            if (distance < 50) {
+              this.currentIndex = index;
+              this.noNearbyQuestions = false;
+            }
+          });
+      },
+      getDistance(lat, lon) {
+        const R = 6371e3; // metres
+        const fi1 = this.user.lat * (Math.PI / 180);
+        const fi2 = lat * (Math.PI / 180);
+        const delta_fi = (lat - this.user.lat) * (Math.PI / 180);
+        const delta_lambda = (lon - this.user.lng) * (Math.PI / 180);
+
+        const a = Math.sin(delta_fi / 2) * Math.sin(delta_fi / 2) + Math.cos(fi1) * Math.cos(fi2) *
+          Math.sin(delta_lambda / 2) * Math.sin(delta_lambda / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+        return R * c;
+      }
+
     },
-    mounted() {
+    async mounted() {
       this.loading = true;
-      this.$getLocation({enableHighAccuracy: true, timeout: Infinity}).then(coordinates => {
+      await this.$getLocation({enableHighAccuracy: true, timeout: Infinity}).then(coordinates => {
         this.user = L.latLng(coordinates.lat, coordinates.lng);
         //this.center = this.user;
       });
-      axios
+      await axios
         .get('http://localhost:8080/games/' + this.$route.params.id)
         .then(response => {
           const game = response.data;
@@ -98,7 +128,8 @@
           console.log(error);
           this.errored = true
         })
-        .finally(() => this.loading = false)
+        .finally(() => this.loading = false);
+      setTimeout(this.checkForNearbyQuestions(), 10 * 1000);
     }
   }
 </script>
