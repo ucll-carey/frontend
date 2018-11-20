@@ -36,7 +36,7 @@
             this.info = 'Wrong... ';
             document.getElementById('option' + index).className = "btn btn-danger";
           }
-          this.info += this.question.answerInfo;
+          this.info += this.question.extraInformation;
           this.options.forEach(option => {
             if (option.value !== index) {
               document.getElementById('option' + option.value).className = "btn btn-disabled"
