@@ -1,18 +1,21 @@
 <template>
-  <b-row>
-    <!-- Button to show map -->
-    <b-btn @click="showModal">
-      <fas icon="map" size="xs"/>
-    </b-btn>
 
+  <b-row>
     <!-- fields with latitude and longitude -->
-    <b-col>
+    <b-col sm="3" class="coordinates-col">
       <b-form-input type="text" step="0.0000001" v-model="coordinates.latitude" required
                     @change="checkCoordinates" placeholder="Latitude, eg: 50.884089"/>
     </b-col>
-    <b-col>
+    <b-col sm="3" class="coordinates-col">
       <b-form-input type="text" step="0.0000001" v-model="coordinates.longitude" required
                     placeholder="Longitude, eg: 4.6353902"/>
+    </b-col>
+
+    <!-- Button to show map -->
+    <b-col sm="1">
+      <b-btn @click="showModal" title="Choose on map">
+        <fas icon="map" size="xs"/>
+      </b-btn>
     </b-col>
 
     <!-- Modal with a map to select the coordinates -->
@@ -90,4 +93,8 @@
 </script>
 <style>
   @import "../../node_modules/leaflet/dist/leaflet.css";
+
+  .coordinates-col {
+    margin-bottom: 0.5rem;
+  }
 </style>

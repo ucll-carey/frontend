@@ -1,71 +1,92 @@
 <template>
-  <b-container class="bv-example-row">
+  <b-container class="form-container">
     <h2>Add city game</h2>
     <b-form @submit="onSubmit">
+      <b-card bg-variant="dark" text-variant="white">
+        <h3>Game info</h3>
+        <b-row>
+          <b-col sm="6">
+            <b-form-group label="Name of the game" label-for="inputName" description="">
+              <b-form-input id="inputName" type="text" v-model="form.name" placeholder="Enter a fun name" required/>
+            </b-form-group>
+          </b-col>
+          <b-col sm="5" offset-sm="1">
+            <b-form-group label="City name" label-for="cityNameInput">
+              <b-form-input id="cityNameInput" type="text" v-model="form.city.name"
+                            placeholder="Enter the city name, eg: Leuven" required/>
+            </b-form-group>
+          </b-col>
+        </b-row>
 
-      <b-form-group label="Name of the game" label-for="inputName" description="">
-        <b-form-input id="inputName" type="text" v-model="form.name" required placeholder="Enter a fun name"/>
-      </b-form-group>
+        <b-form-group label="City coordinates">
+          <coordinates :coordinates.sync="form.city.coordinates"/>
+        </b-form-group>
 
-      <b-form-group label="City name" label-for="cityNameInput">
-        <b-form-input id="cityNameInput" type="text" v-model="form.city.name" required
-                      placeholder="Enter the city name, eg: Leuven"/>
-      </b-form-group>
+        <b-form-group label="Description of the game" label-for="inputDescription" description="">
+          <b-form-textarea id="inputDescription" rows="3" v-model="form.description" required placeholder=""/>
+        </b-form-group>
+      </b-card>
 
-      <b-form-group label="City coordinates">
-        <coordinates :coordinates.sync="form.city.coordinates"/>
-      </b-form-group>
+      <b-card bg-variant="dark" text-variant="white">
+        <h3>Questions</h3>
+        <div>
+          <b-card v-for="(item, i) in form.questions" :key="i" class="question-card" text-variant="dark">
+            <b-row>
+              <b-col sm="11">
+                <h4>Question {{i + 1}} </h4>
+              </b-col>
+              <b-col sm="1" class="remove-button-col">
+                <b-button @click="removeQuestion(i)">
+                  <fas icon="trash" size="xs"/>
+                </b-button>
+              </b-col>
+            </b-row>
 
-      <b-form-group label="Description of the game" label-for="inputDescription" description="">
-        <b-form-textarea id="inputDescription" rows="3" v-model="form.description" required placeholder=""/>
-      </b-form-group>
+            <b-form-group label="Question">
+              <b-form-input type="text" v-model="item.question" required/>
+            </b-form-group>
 
-      <ul class="questions">
-        <li v-for="(item, i) in form.questions" :key="i">
-          <b-button @click="removeQuestion(i)">
-            <fas icon="trash"/>
-          </b-button>
+            <b-form-group label="Question coordinates">
+              <coordinates :coordinates.sync="item.coordinates"/>
+            </b-form-group>
 
-          <b-form-group label="Question coordinates">
-            <coordinates :coordinates.sync="item.coordinates"/>
-          </b-form-group>
-          <b-form-group label="Question">
-            <b-form-input type="text" v-model="item.question" required/>
-          </b-form-group>
-          <ul class="answers">
-            <li v-for="(answer, j) in item.answers" :key="j">
-              <b-input-group>
-                <b-input-group-prepend is-text>
-                  <input type="radio" :value="j" v-model="item.correctQuestionIndex"/>
-                </b-input-group-prepend>
-                <b-form-input type="text" v-model="answer.value" :ref="`question${i}answer${j}`"/>
-                <b-input-group-append>
-                  <b-btn variant="outline-secondary" @click="removeAnswer(item, j)">
-                    <fas icon="trash"/>
-                  </b-btn>
-                </b-input-group-append>
-              </b-input-group>
-            </li>
-            <li class="last">
-              <b-btn variant="link" @click="addAnswer(item)">
-                <fas icon="plus"/>
-                Add Answer
-              </b-btn>
-            </li>
-          </ul>
-          <b-form-group label="Extra information about answer">
-            <b-form-textarea rows="3" v-model="item.information"/>
-          </b-form-group>
-        </li>
-        <li class="last">
+            <b-form-group label="Answers">
+            </b-form-group>
+            <ul class="answers">
+              <li v-for="(answer, j) in item.answers" :key="j">
+                <b-input-group>
+                  <b-input-group-prepend is-text>
+                    <input type="radio" :value="j" v-model="item.correctQuestionIndex"/>
+                  </b-input-group-prepend>
+                  <b-form-input type="text" v-model="answer.value" :ref="`question${i}answer${j}`"/>
+                  <b-input-group-append>
+                    <b-btn variant="outline-secondary" @click="removeAnswer(item, j)">
+                      <fas icon="trash"/>
+                    </b-btn>
+                  </b-input-group-append>
+                </b-input-group>
+              </li>
+              <li class="last">
+                <b-btn variant="link" @click="addAnswer(item)">
+                  <fas icon="plus" class="button-icon"/>
+                  Add Answer
+                </b-btn>
+              </li>
+            </ul>
+
+            <b-form-group label="Extra information about answer">
+              <b-form-textarea rows="3" v-model="item.information"/>
+            </b-form-group>
+          </b-card>
+        </div>
+        <div class="new-question-button">
           <b-button variant="link" @click="addQuestion">
-            <fas icon="plus"/>
+            <fas icon="plus" class="button-icon"/>
             Add Question
           </b-button>
-        </li>
-
-      </ul>
-      <b-button type="submit" variant="primary">Submit</b-button>
+        </div>
+      </b-card>
+      <b-button type="submit" variant="primary" class="submit-button">Submit</b-button>
     </b-form>
   </b-container>
 </template>
@@ -159,3 +180,53 @@
     },
   };
 </script>
+
+<style>
+  h2 {
+    text-align: center;
+  }
+
+  h4 {
+    padding-top: 1rem;
+  }
+
+  .form-group {
+    margin-top: 2rem;
+    /*font-weight: bold;*/
+  }
+
+  .card {
+    margin-top: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  .question-card {
+    margin: 1rem;
+  }
+
+  .remove-button-col {
+    text-align: right;
+  }
+
+  .answers {
+    list-style: none;
+    padding-left: 0;
+  }
+
+  .answers li {
+    margin-bottom: 0.5rem;
+  }
+
+  .button-icon {
+    margin-right: 0.5rem;
+  }
+
+  .new-question-button .btn-link {
+    color: white !important;
+  }
+
+  .submit-button {
+    margin-bottom: 2rem;
+  }
+
+</style>
