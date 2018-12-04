@@ -2,11 +2,11 @@
   <b-container v-if="game">
     <h2>{{ game.name }}</h2>
     <div style="height: 600px; overflow: auto; border: 1px solid black;" v-if="noNearbyQuestions">
-      <l-map :zoom="zoom" :options="mapOptions" :center="center"
+      <l-map :zoom="zoom" :options="mapOptions" :center="currentCenter"
              @update:center="centerUpdate" @update:zoom="zoomUpdate">
         <l-tile-layer :url="url" :attribution="attribution"/>
         <l-marker v-for="(question, index) in game.questions" :key="index"
-                  :lat-lng="getCoordinates(question.coordinates)">
+                  :lat-lng="getCoordinates(question.coordinates)" :icon="getQuestionIcon(question)">
           <l-popup>
             <div @click="popupClick">
               {{question.question}}
@@ -30,11 +30,13 @@
 
   delete L.Icon.Default.prototype._getIconUrl;
 
-  L.Icon.Default.mergeOptions({
-    iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
-    iconUrl: require('leaflet/dist/images/marker-icon.png'),
-    shadowUrl: require('leaflet/dist/images/marker-shadow.png')
-  });
+  const defaultIconOptions = {
+    shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+  };
 
   export default {
     components: {
@@ -51,9 +53,27 @@
         game: null,
         user: null,
         userIcon: L.icon({
-          iconUrl: '/images/user.png',
-          iconSize: [36, 36],
-          iconAnchor: [36, 36]
+          iconRetinaUrl: require('../../public/images/user.png'),
+          iconUrl: require('../../public/images/user.png'),
+          shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
+          iconSize: [41, 41],
+          iconAnchor: [20, 41],
+          shadowAnchor:[10, 40]
+        }),
+        defaultQuestionIcon: L.icon({
+          iconRetinaUrl: require('../../public/images/marker-icon-2x-grey.png'),
+          iconUrl: require('../../public/images/marker-icon-grey.png'),
+          ...defaultIconOptions
+        }),
+        correctAnswerIcon: L.icon({
+          iconRetinaUrl: require('../../public/images/marker-icon-2x-green.png'),
+          iconUrl: require('../../public/images/marker-icon-green.png'),
+          ...defaultIconOptions
+        }),
+        wrongAnswerIcon: L.icon({
+          iconRetinaUrl: require('../../public/images/marker-icon-2x-red.png'),
+          iconUrl: require('../../public/images/marker-icon-red.png'),
+          ...defaultIconOptions
         }),
         zoom: 18,
         center: L.latLng(47.413220, -1.219482),
@@ -89,7 +109,7 @@
           .filter(question => !question.answered)
           .forEach(async (question, index) => {
             const distance = await this.getDistance(question.coordinates.lat, question.coordinates.lon);
-            if (distance < 50) {
+            if (distance < 100) {
               this.currentIndex = index;
               this.noNearbyQuestions = false;
             }
@@ -107,20 +127,26 @@
         const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
         return R * c;
+      },
+      getQuestionIcon(question) {
+        if (question.answered) {
+          if (question.selectedAnswer === question.correctAnswer) return this.correctAnswerIcon;
+          else return this.wrongAnswerIcon;
+        } else return this.defaultQuestionIcon;
       }
 
     },
     async mounted() {
       this.loading = true;
-      await this.$getLocation({enableHighAccuracy: true, timeout: Infinity}).then(coordinates => {
+      await this.$watchLocation({enableHighAccuracy: true, timeout: Infinity}).then(coordinates => {
         this.user = L.latLng(coordinates.lat, coordinates.lng);
-        //this.center = this.user;
+        this.center = this.user;
+        this.centerUpdate(this.user);
       });
       await axios
         .get('http://localhost:8080/games/' + this.$route.params.id)
         .then(response => {
           const game = response.data;
-          console.log('game', game);
           this.game = game;
           this.center = L.latLng(game.coordinates.lat, game.coordinates.lon);
         })

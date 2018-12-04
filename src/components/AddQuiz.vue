@@ -198,6 +198,7 @@
   .card {
     margin-top: 2rem;
     margin-bottom: 3rem;
+    border-radius: 0.3rem !important;
   }
 
   .question-card {

@@ -77,8 +77,8 @@
       showModal() {
         // When opening the modal, check if coordinates are already filled in
         if (this.coordinates && this.coordinates.longitude && this.coordinates.latitude) {
-          this.center = L.latLng(this.coordinates.longitude, this.coordinates.latitude);
-          this.selected = L.latLng(this.coordinates.longitude, this.coordinates.latitude);
+          this.center = L.latLng(this.coordinates.latitude, this.coordinates.longitude);
+          this.selected = L.latLng(this.coordinates.latitude, this.coordinates.longitude);
         }
         // open the modal
         this.$refs.myModalRef.show();

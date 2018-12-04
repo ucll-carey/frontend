@@ -1,5 +1,5 @@
 <template>
-  <div class="card">
+  <b-card bg-variant="dark" text-variant="white">
     <h3>{{question.question}}</h3>
     <div v-for="(option, i) in options" :key="i">
       <div
@@ -15,7 +15,7 @@
       </div>
     </div>
     <div class="answerInfo">{{info}}</div>
-  </div>
+  </b-card>
 </template>
 
 <script>
@@ -64,6 +64,7 @@
           });
           setTimeout(() => {
             this.question.answered = true;
+            this.question.selectedAnswer = index;
             this.getNextQuestion();
           }, 5 * 1000);
         }
@@ -73,13 +74,6 @@
 </script>
 
 <style scoped>
-
-  .card {
-    background: #e0e2f9;
-    padding: 1rem;
-    margin: 2rem 0;
-  }
-
   h3 {
     font-size: 1.5rem;
     font-weight: bold;
@@ -90,20 +84,21 @@
   }
 
   .btn-disabled {
+    color: black;
     background: #f1f1f1;
     border: 0.05rem solid #bdbdbd;
   }
 
   .btn-success, .btn-success:hover {
+    color: black;
     background: #bef1af;
     border: 0.05rem solid #9bc691;
-    color: #2c3e50;
   }
 
   .btn-danger, .btn-danger:hover {
+    color: black;
     background: #f1b7b8;
     border: 0.05rem solid #c69596;
-    color: #2c3e50;
   }
 
   .answerInfo {
