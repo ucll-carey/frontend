@@ -143,6 +143,11 @@
         this.center = this.user;
         this.centerUpdate(this.user);
       });
+      this.$watchLocation({enableHighAccuracy: true, timeout: Infinity}).then(coordinates => {
+        this.user = L.latLng(coordinates.lat, coordinates.lng);
+        console.log('location changed', coordinates);
+      });
+
       await axios
         .get('http://localhost:8080/games/' + this.$route.params.id)
         .then(response => {
