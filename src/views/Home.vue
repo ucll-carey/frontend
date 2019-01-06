@@ -43,23 +43,19 @@
     },
     methods: {
       async getGames() {
-        const response = await axios.get('http://localhost:8080/games');
+        const response = await axios.get(process.env.VUE_APP_API_URL + 'games');
         this.games = await Promise.all(response.data.map(async (game) => {
           game.image = await this.getGameImage(game.location);
           return game;
         }));
       },
       async getGameImage(location) {
-        return axios.get('https://cors-anywhere.herokuapp.com/http://en.wikipedia.org/w/api.php?action=query&prop=pageimages&format=json&piprop=original&titles=' + location)
-          .then(response => {
-            let id = Object.keys(response.data.query.pages)[0];
-            if (response.data.query.pages[id].original) {
-              return response.data.query.pages[id].original.source;
-            } else {
-              return '/images/no-city-image.jpg';
-            }
-          }).catch(error => {
-            console.error(error);
+        return axios.get(process.env.VUE_APP_IMAGESERVICE_URL + location)
+          .then(response => response.data.length > 0 ? response.data : '/images/no-city-image.jpg')
+          .catch(error => {
+            // frontend Circuit Breaker
+            console.error('Error fetching image for', location, error);
+            return '/images/no-city-image.jpg';
           });
       },
       async removeGame(game) {

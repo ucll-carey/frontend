@@ -32,6 +32,11 @@ Vue.use(VueGeolocation);
 
 Vue.config.productionTip = false
 
+// cookies
+import VueCookies from 'vue-cookies';
+Vue.use(VueCookies);
+VueCookies.config('7d');
+
 new Vue({
   router,
   render: h => h(App)
