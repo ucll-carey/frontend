@@ -1,6 +1,10 @@
 <template>
   <b-container v-if="game">
     <h2>{{ game.name }}</h2>
+    <p>
+      Rate this quiz!
+      <star-rating @rating-selected ="setRating"/>
+    </p>
     <div style="height: 600px; overflow: auto; border: 1px solid black;" v-if="noNearbyQuestions">
       <l-map :zoom="zoom" :options="mapOptions" :center="currentCenter"
              @update:center="centerUpdate" @update:zoom="zoomUpdate">
@@ -90,6 +94,23 @@
       };
     },
     methods: {
+      async setRating(rating) {
+        console.log('setting rating to', rating, 'for quiz with id', this.game.id, 'for user', $cookies.get('username'));
+        axios
+          .post(process.env.VUE_APP_RECOMMEND_URL + 'recommend', {
+            emailAddress: $cookies.get('username'),
+            ratedItem: this.game.id,
+            rating: rating
+          })
+          .then(response => {
+            console.log('succesful', response);
+            this.$router.push('/');
+          })
+          .catch(error => {
+            console.log(error);
+          });
+          //.finally(() => this.loading = false)
+      },
       zoomUpdate(zoom) {
         this.currentZoom = zoom;
       },

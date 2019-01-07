@@ -23,6 +23,7 @@
     "vue-browser-geolocation": "^1.5.0",
     "vue-cookies": "^1.5.12",
     "vue-router": "^3.0.1",
+    "vue-star-rating": "^1.6.1",
     "vue2-leaflet": "^1.2.3"
   },
   "devDependencies": {

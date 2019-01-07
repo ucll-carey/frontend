@@ -37,6 +37,11 @@ import VueCookies from 'vue-cookies';
 Vue.use(VueCookies);
 VueCookies.config('7d');
 
+// rating
+import StarRating from 'vue-star-rating'
+Vue.component('star-rating', StarRating);
+
+
 new Vue({
   router,
   render: h => h(App)
