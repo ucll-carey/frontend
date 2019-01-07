@@ -10,6 +10,7 @@
             <b-card :title="game.name" style="max-width: 20rem;" class="mb-2">
               <p class="card-text">{{game.description}}<span class="city"> - @{{game.location}}</span></p>
               <b-link :to="`/game/${game.id}`" variant="primary">Start This game</b-link>
+              <p v-if="game.score > 0">Recommended: {{game.score}}/5</p>
               <div>
                 <b-button @click="removeGame(game)" class="removeGameButton">Remove this game
                   <fas icon="trash"></fas>
@@ -43,7 +44,7 @@
     },
     methods: {
       async getGames() {
-        const response = await axios.get(process.env.VUE_APP_API_URL + 'games');
+        const response = await axios.get(process.env.VUE_APP_API_URL + 'games' + ($cookies.isKey('username') ? '?username=' + $cookies.get('username') : ''));
         this.games = await Promise.all(response.data.map(async (game) => {
           game.image = await this.getGameImage(game.location);
           return game;
