@@ -166,7 +166,7 @@
           }))
         };
         axios
-          .post('http://localhost:8080/games', data)
+          .post(process.env.VUE_APP_API_URL + 'games', data)
           .then(response => {
             console.log('succesful', response);
             this.$router.push('/');

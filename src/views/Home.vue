@@ -59,7 +59,7 @@
           });
       },
       async removeGame(game) {
-        await axios.delete('http://localhost:8080/games/' + game.id);
+        await axios.delete(process.env.VUE_APP_API_URL + '/games/' + game.id);
         this.getGames();
       },
       onSlideStart() {
