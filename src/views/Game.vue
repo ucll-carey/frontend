@@ -149,7 +149,7 @@
       });
 
       await axios
-        .get(process.env.VUE_APP_SECRET + 'games/' + this.$route.params.id)
+        .get(process.env.VUE_APP_API_URL + 'games/' + this.$route.params.id)
         .then(response => {
           const game = response.data;
           this.game = game;
