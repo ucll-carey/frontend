@@ -9,7 +9,7 @@
           <div class="col-xs-4">
             <b-card :title="game.name" style="max-width: 20rem;" class="mb-2">
               <p class="card-text">{{game.description}}<span class="city"> - @{{game.location}}</span></p>
-              <b-button :href="`/game/${game.id}`" variant="primary">Start This game</b-button>
+              <b-link :to="`/game/${game.id}`" variant="primary">Start This game</b-link>
               <div>
                 <b-button @click="removeGame(game)" class="removeGameButton">Remove this game
                   <fas icon="trash"></fas>
