@@ -35,10 +35,12 @@
       login() {
         this.user = { name: this.userName };
         $cookies.set('username', this.userName);
+        this.$router.go(0);
       },
       logout() {
         $cookies.remove('username');
         this.user = null;
+        this.$router.go(0);
       },
     },
   }
