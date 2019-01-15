@@ -49,6 +49,7 @@
           game.image = await this.getGameImage(game.location);
           return game;
         }));
+        this.games.sort(this.compare);
       },
       async getGameImage(location) {
         return axios.get(process.env.VUE_APP_IMAGESERVICE_URL + location)
@@ -68,6 +69,13 @@
       },
       onSlideEnd() {
         this.sliding = false
+      },
+      compare: function(a, b) {
+        if (a.score > b.score)
+          return -1;
+        if (a.score < b.score)
+          return 1;
+        return 0;
       }
 
     }
